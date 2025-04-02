@@ -11,7 +11,7 @@ function TicketGenerator() {
     address: "", // Reemplazamos DNI por Dirección
     phone: "",
   });
-  const [ticketNumber, setTicketNumber] = useState(1);
+  const [ticketNumber, setTicketNumber] = useState(50);
   const [editingIndex, setEditingIndex] = useState(null); // Índice de la fila en edición
   const [expandedRow, setExpandedRow] = useState(null); // Índice de la fila expandida
   const ticketRefs = useRef([]);
