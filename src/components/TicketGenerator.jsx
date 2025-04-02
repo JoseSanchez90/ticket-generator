@@ -10,8 +10,9 @@ function TicketGenerator() {
     lastName: "",
     dni: "",
     phone: "",
+    address: "", // Nuevo campo para la dirección
   });
-  const [ticketNumber, setTicketNumber] = useState(1);
+  const [ticketNumber, setTicketNumber] = useState(50);
   const [editingIndex, setEditingIndex] = useState(null); // Índice de la fila en edición
   const [expandedRow, setExpandedRow] = useState(null); // Índice de la fila expandida
   const ticketRefs = useRef([]);
@@ -22,7 +23,6 @@ function TicketGenerator() {
     if (savedNumber && !isNaN(parseInt(savedNumber))) {
       setTicketNumber(parseInt(savedNumber));
     }
-
     const savedPeople = localStorage.getItem("people");
     if (savedPeople) {
       try {
@@ -47,16 +47,14 @@ function TicketGenerator() {
 
   // Agregar una nueva persona a la lista
   const addPerson = () => {
-    if (!formData.firstName || !formData.lastName || !formData.dni || !formData.phone) {
+    if (!formData.firstName || !formData.lastName || !formData.dni || !formData.phone || !formData.address) {
       alert("Por favor, llena todos los campos.");
       return;
     }
-
     if (!/^\d{8}$/.test(formData.dni)) {
       alert("El DNI debe tener 8 dígitos numéricos.");
       return;
     }
-
     if (!/^\d+$/.test(formData.phone)) {
       alert("El teléfono debe contener solo números.");
       return;
@@ -68,7 +66,6 @@ function TicketGenerator() {
       ticketNumber: ticketNumber.toString().padStart(3, "0"),
       createdAt: new Date(),
     };
-
     const updatedPeople = [...people, newPerson];
     setPeople(updatedPeople);
 
@@ -77,7 +74,7 @@ function TicketGenerator() {
     localStorage.setItem("ticketNumber", ticketNumber + 1);
 
     setTicketNumber(ticketNumber + 1);
-    setFormData({ firstName: "", lastName: "", dni: "", phone: "" });
+    setFormData({ firstName: "", lastName: "", dni: "", phone: "", address: "" }); // Limpiar el campo de dirección
   };
 
   // Formatear fecha y hora
@@ -102,9 +99,9 @@ function TicketGenerator() {
         Apellidos: person.lastName,
         DNI: person.dni,
         Teléfono: person.phone,
+        Dirección: person.address, // Incluir la dirección en el Excel
         "Fecha y Hora": formatDateTime(person.createdAt),
       }));
-
       const worksheet = XLSX.utils.json_to_sheet(dataForExcel);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Tickets");
@@ -181,6 +178,14 @@ function TicketGenerator() {
             onChange={handleChange}
             className="p-2 border rounded m-2 w-full"
           />
+          <input
+            type="text"
+            name="address"
+            placeholder="Dirección"
+            value={formData.address}
+            onChange={handleChange}
+            className="p-2 border rounded m-2 w-full"
+          />
           <button
             onClick={addPerson}
             className="mt-2 p-2 bg-blue-600 hover:bg-blue-500 text-white rounded cursor-pointer w-full"
@@ -197,6 +202,7 @@ function TicketGenerator() {
             <p className="text-gray-800 font-bold"><strong>Apellidos:</strong> {formData.lastName}</p>
             <p className="text-gray-800 font-bold"><strong>DNI:</strong> {formData.dni}</p>
             <p className="text-gray-800 font-bold"><strong>Teléfono:</strong> {formData.phone}</p>
+            <p className="text-gray-800 font-bold"><strong>Dirección:</strong> {formData.address}</p>
           </div>
         </div>
       </div>
@@ -220,6 +226,7 @@ function TicketGenerator() {
               <th className="border border-gray-300 p-2">Apellidos</th>
               <th className="border border-gray-300 p-2">DNI</th>
               <th className="border border-gray-300 p-2">Teléfono</th>
+              <th className="border border-gray-300 p-2">Dirección</th>
               <th className="border border-gray-300 p-2">Fecha y Hora</th>
               <th className="border border-gray-300 p-2">Acciones</th>
             </tr>
@@ -277,6 +284,18 @@ function TicketGenerator() {
                       person.phone
                     )}
                   </td>
+                  <td className="border border-gray-300 p-2">
+                    {editingIndex === index ? (
+                      <input
+                        type="text"
+                        value={person.address}
+                        onChange={(e) => updatePerson(index, "address", e.target.value)}
+                        className="p-1 border rounded w-full"
+                      />
+                    ) : (
+                      person.address
+                    )}
+                  </td>
                   <td className="border border-gray-300 p-2">{formatDateTime(person.createdAt)}</td>
                   <td className="border border-gray-300 p-2">
                     {editingIndex === index ? (
@@ -304,7 +323,7 @@ function TicketGenerator() {
                 </tr>
                 {expandedRow === index && (
                   <tr>
-                    <td colSpan="7" className="p-4">
+                    <td colSpan="8" className="p-4">
                       <div className="flex flex-col items-center">
                         {/* Ticket con diseño */}
                         <div ref={(el) => (ticketRefs.current[index] = el)} className="relative w-[900px] h-[300px]">
@@ -312,10 +331,11 @@ function TicketGenerator() {
                           <img src={ticketImage} alt="Ticket" className="w-full h-full" />
                           {/* Datos sobre el ticket */}
                           <div className="absolute top-1.5 right-20 text-red-500 font-bold text-lg">{person.ticketNumber}</div>
-                          <div className="absolute bottom-53.5 right-15 text-black font-semibold">{person.firstName}</div>
-                          <div className="absolute bottom-39.5 right-18 text-black font-semibold">{person.lastName}</div>
-                          <div className="absolute bottom-25.5 right-25 text-black font-semibold">{person.dni}</div>
-                          <div className="absolute bottom-11.5 right-22 text-black font-semibold">{person.phone}</div>
+                          <div className="absolute bottom-53.5 right-15 text-black font-semibold text-sm">{person.firstName}</div>
+                          <div className="absolute bottom-41.5 right-18 text-black font-semibold text-sm">{person.lastName}</div>
+                          <div className="absolute bottom-29.5 right-25 text-black font-semibold text-sm">{person.dni}</div>
+                          <div className="absolute bottom-17 right-22 text-black font-semibold text-sm">{person.phone}</div>
+                          <div className="absolute bottom-4.5 right-4 text-black font-semibold text-sm">{person.address}</div> {/* Dirección */}
                         </div>
                         {/* Botón para descargar el ticket */}
                         <button
