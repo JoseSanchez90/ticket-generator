@@ -272,7 +272,7 @@ function TicketGenerator() {
             {/* Ticket con diseño */}
             <div ref={(el) => (ticketRefs.current[index] = el)} className="relative w-[900px] h-[300px]">
               {/* Imagen de fondo del ticket */}
-              <img src="/img/ticket.png" alt="Ticket" className="w-full h-full" />
+              <img src="/src/img/ticket.png" alt="Ticket" className="w-full h-full" />
 
               {/* Datos sobre el ticket */}
               <div className="absolute top-1.5 right-20 text-red-500 font-bold text-lg">{person.ticketNumber}</div>
