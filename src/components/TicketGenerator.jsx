@@ -306,7 +306,7 @@ function TicketGenerator() {
                           <div className="absolute top-1.5 right-20 text-red-500 font-bold text-lg">{person.ticketNumber}</div>
                           <div className="absolute bottom-54.5 right-25 text-black font-semibold">{person.firstName}</div>
                           <div className="absolute bottom-40 right-20 text-black font-semibold">{person.lastName}</div>
-                          <div className="absolute bottom-26 right-2 text-black font-semibold">{person.address}</div> {/* Mostrar Dirección */}
+                          <div className="absolute bottom-26 right-4 text-black font-semibold">{person.address}</div> {/* Mostrar Dirección */}
                           <div className="absolute bottom-11.5 right-22 text-black font-semibold">{person.phone}</div>
                         </div>
                         {/* Botón para descargar el ticket */}
