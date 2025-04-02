@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
-import ticketImage from './img/ticket.png'; // Importa la imagen del ticket
+import ticketImage from '../img/ticket.png'; // Importa la imagen del ticket
 
 function TicketGenerator() {
   const [people, setPeople] = useState([]);
