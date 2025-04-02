@@ -304,10 +304,10 @@ function TicketGenerator() {
                           <img src={ticketImage} alt="Ticket" className="w-full h-full" />
                           {/* Datos sobre el ticket */}
                           <div className="absolute top-1.5 right-20 text-red-500 font-bold text-lg">{person.ticketNumber}</div>
-                          <div className="absolute bottom-54.5 right-25 text-black font-semibold">{person.firstName}</div>
-                          <div className="absolute bottom-40 right-20 text-black font-semibold">{person.lastName}</div>
-                          <div className="absolute bottom-26 right-4 text-black font-semibold">{person.address}</div> {/* Mostrar Dirección */}
-                          <div className="absolute bottom-11.5 right-22 text-black font-semibold">{person.phone}</div>
+                          <div className="absolute bottom-54.5 right-25 text-black font-semibold text-sm">{person.firstName}</div>
+                          <div className="absolute bottom-40 right-20 text-black font-semibold text-sm">{person.lastName}</div>
+                          <div className="absolute bottom-26 right-4 text-black font-semibold text-sm">{person.address}</div> {/* Mostrar Dirección */}
+                          <div className="absolute bottom-11.5 right-22 text-black font-semibold text-sm">{person.phone}</div>
                         </div>
                         {/* Botón para descargar el ticket */}
                         <button
