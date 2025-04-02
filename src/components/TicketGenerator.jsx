@@ -140,7 +140,7 @@ function TicketGenerator() {
       {/* Formulario para ingresar datos */}
       <div className="mb-4 w-full max-w-4xl flex justify-between">
         <div className="w-1/2 pr-4">
-          <h2 className="text-xl font-bold mb-4">Formulario sorteo</h2>
+          <h2 className="text-xl font-bold mb-4">Formulario para el Sorteo</h2>
           <input
             type="text"
             name="firstName"
