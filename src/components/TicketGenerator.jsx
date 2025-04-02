@@ -54,7 +54,6 @@ function TicketGenerator() {
       alert("El teléfono debe contener solo números.");
       return;
     }
-
     const newPerson = {
       ...formData,
       id: Date.now(),
@@ -63,11 +62,9 @@ function TicketGenerator() {
     };
     const updatedPeople = [...people, newPerson];
     setPeople(updatedPeople);
-
     // Guardar en localStorage
     localStorage.setItem("people", JSON.stringify(updatedPeople));
     localStorage.setItem("ticketNumber", ticketNumber + 1);
-
     setTicketNumber(ticketNumber + 1);
     setFormData({ firstName: "", lastName: "", address: "", phone: "" }); // Limpiar el campo de dirección
   };
@@ -96,7 +93,6 @@ function TicketGenerator() {
         Teléfono: person.phone,
         "Fecha y Hora": formatDateTime(person.createdAt),
       }));
-
       const worksheet = XLSX.utils.json_to_sheet(dataForExcel);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Tickets");
@@ -112,9 +108,18 @@ function TicketGenerator() {
     const updatedPeople = [...people];
     updatedPeople[index][field] = value.toUpperCase();
     setPeople(updatedPeople);
-
     // Guardar en localStorage
     localStorage.setItem("people", JSON.stringify(updatedPeople));
+  };
+
+  // Eliminar una persona
+  const deletePerson = (index) => {
+    if (window.confirm("¿Estás seguro de que deseas eliminar este cliente?")) {
+      const updatedPeople = people.filter((_, i) => i !== index);
+      setPeople(updatedPeople);
+      // Guardar en localStorage
+      localStorage.setItem("people", JSON.stringify(updatedPeople));
+    }
   };
 
   // Generar imagen del ticket
@@ -180,7 +185,6 @@ function TicketGenerator() {
             Generar Ticket
           </button>
         </div>
-
         {/* Muestra los datos en tiempo real */}
         <div className="w-1/2 pl-4">
           <h2 className="text-xl font-bold mb-4">Datos Actuales</h2>
@@ -192,7 +196,6 @@ function TicketGenerator() {
           </div>
         </div>
       </div>
-
       {/* Lista de tickets generados */}
       <div className="w-full mt-8">
         <div className="flex justify-between items-center mb-4">
@@ -291,6 +294,12 @@ function TicketGenerator() {
                       className="ml-2 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded cursor-pointer"
                     >
                       {expandedRow === index ? "Ocultar Ticket" : "Mostrar Ticket"}
+                    </button>
+                    <button
+                      onClick={() => deletePerson(index)}
+                      className="ml-2 p-2 bg-red-600 hover:bg-red-700 text-white rounded cursor-pointer"
+                    >
+                      Eliminar
                     </button>
                   </td>
                 </tr>
