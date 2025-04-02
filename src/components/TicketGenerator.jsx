@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
-import ticketImage from '../img/ticket.png'; // Importa la imagen del ticket
+import ticketImage from "../img/ticket.png"; // Importa la imagen del ticket
 
 function TicketGenerator() {
   const [people, setPeople] = useState([]);
@@ -12,27 +12,40 @@ function TicketGenerator() {
     phone: "",
   });
   const [ticketNumber, setTicketNumber] = useState(1);
-  const [editingPerson, setEditingPerson] = useState(null);
+  const [editingIndex, setEditingIndex] = useState(null); // Índice de la fila en edición
+  const [expandedRow, setExpandedRow] = useState(null); // Índice de la fila expandida
   const ticketRefs = useRef([]);
 
+  // Recuperar datos de localStorage al cargar la aplicación
   useEffect(() => {
     const savedNumber = localStorage.getItem("ticketNumber");
     if (savedNumber && !isNaN(parseInt(savedNumber))) {
       setTicketNumber(parseInt(savedNumber));
     }
+
+    const savedPeople = localStorage.getItem("people");
+    if (savedPeople) {
+      try {
+        const parsedPeople = JSON.parse(savedPeople);
+        const validatedPeople = parsedPeople.map((person) => ({
+          ...person,
+          createdAt: person.createdAt ? new Date(person.createdAt) : new Date(),
+        }));
+        setPeople(validatedPeople);
+      } catch (error) {
+        console.error("Error al parsear los datos de people:", error);
+        setPeople([]);
+      }
+    }
   }, []);
 
-  useEffect(() => {
-    return () => {
-      ticketRefs.current = []; // Limpiar referencias al desmontar
-    };
-  }, []);
-
+  // Manejar cambios en los inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value.toUpperCase() });
   };
 
+  // Agregar una nueva persona a la lista
   const addPerson = () => {
     if (!formData.firstName || !formData.lastName || !formData.dni || !formData.phone) {
       alert("Por favor, llena todos los campos.");
@@ -56,12 +69,18 @@ function TicketGenerator() {
       createdAt: new Date(),
     };
 
-    setPeople([...people, newPerson]);
-    setTicketNumber(ticketNumber + 1);
+    const updatedPeople = [...people, newPerson];
+    setPeople(updatedPeople);
+
+    // Guardar en localStorage
+    localStorage.setItem("people", JSON.stringify(updatedPeople));
     localStorage.setItem("ticketNumber", ticketNumber + 1);
+
+    setTicketNumber(ticketNumber + 1);
     setFormData({ firstName: "", lastName: "", dni: "", phone: "" });
   };
 
+  // Formatear fecha y hora
   const formatDateTime = (date) => {
     const options = {
       year: "numeric",
@@ -74,6 +93,7 @@ function TicketGenerator() {
     return new Intl.DateTimeFormat("es-ES", options).format(date);
   };
 
+  // Exportar a Excel
   const exportToExcel = () => {
     try {
       const dataForExcel = people.map((person) => ({
@@ -95,14 +115,17 @@ function TicketGenerator() {
     }
   };
 
-  const updatePerson = () => {
-    const updatedPeople = people.map((person) =>
-      person.id === editingPerson.id ? editingPerson : person
-    );
+  // Actualizar datos de una persona
+  const updatePerson = (index, field, value) => {
+    const updatedPeople = [...people];
+    updatedPeople[index][field] = value.toUpperCase();
     setPeople(updatedPeople);
-    setEditingPerson(null);
+
+    // Guardar en localStorage
+    localStorage.setItem("people", JSON.stringify(updatedPeople));
   };
 
+  // Generar imagen del ticket
   const generateImage = async (index) => {
     try {
       if (ticketRefs.current[index]) {
@@ -202,110 +225,113 @@ function TicketGenerator() {
             </tr>
           </thead>
           <tbody>
-            {people.map((person) => (
-              <tr key={person.id} className="text-center">
-                <td className="border border-gray-300 p-2">{person.ticketNumber}</td>
-                <td className="border border-gray-300 p-2">{person.firstName}</td>
-                <td className="border border-gray-300 p-2">{person.lastName}</td>
-                <td className="border border-gray-300 p-2">{person.dni}</td>
-                <td className="border border-gray-300 p-2">{person.phone}</td>
-                <td className="border border-gray-300 p-2">{formatDateTime(person.createdAt)}</td>
-                <td className="border border-gray-300 p-2">
-                  <button
-                    onClick={() => setEditingPerson(person)}
-                    className="p-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded cursor-pointer"
-                  >
-                    Editar
-                  </button>
-                </td>
-              </tr>
+            {people.map((person, index) => (
+              <>
+                <tr key={person.id} className="text-center">
+                  <td className="border border-gray-300 p-2">{person.ticketNumber}</td>
+                  <td className="border border-gray-300 p-2">
+                    {editingIndex === index ? (
+                      <input
+                        type="text"
+                        value={person.firstName}
+                        onChange={(e) => updatePerson(index, "firstName", e.target.value)}
+                        className="p-1 border rounded w-full"
+                      />
+                    ) : (
+                      person.firstName
+                    )}
+                  </td>
+                  <td className="border border-gray-300 p-2">
+                    {editingIndex === index ? (
+                      <input
+                        type="text"
+                        value={person.lastName}
+                        onChange={(e) => updatePerson(index, "lastName", e.target.value)}
+                        className="p-1 border rounded w-full"
+                      />
+                    ) : (
+                      person.lastName
+                    )}
+                  </td>
+                  <td className="border border-gray-300 p-2">
+                    {editingIndex === index ? (
+                      <input
+                        type="text"
+                        value={person.dni}
+                        onChange={(e) => updatePerson(index, "dni", e.target.value)}
+                        className="p-1 border rounded w-full"
+                      />
+                    ) : (
+                      person.dni
+                    )}
+                  </td>
+                  <td className="border border-gray-300 p-2">
+                    {editingIndex === index ? (
+                      <input
+                        type="text"
+                        value={person.phone}
+                        onChange={(e) => updatePerson(index, "phone", e.target.value)}
+                        className="p-1 border rounded w-full"
+                      />
+                    ) : (
+                      person.phone
+                    )}
+                  </td>
+                  <td className="border border-gray-300 p-2">{formatDateTime(person.createdAt)}</td>
+                  <td className="border border-gray-300 p-2">
+                    {editingIndex === index ? (
+                      <button
+                        onClick={() => setEditingIndex(null)}
+                        className="p-2 bg-green-600 hover:bg-green-700 text-white rounded cursor-pointer"
+                      >
+                        Guardar
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setEditingIndex(index)}
+                        className="p-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded cursor-pointer"
+                      >
+                        Editar
+                      </button>
+                    )}
+                    <button
+                      onClick={() => setExpandedRow(expandedRow === index ? null : index)}
+                      className="ml-2 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded cursor-pointer"
+                    >
+                      {expandedRow === index ? "Ocultar Ticket" : "Mostrar Ticket"}
+                    </button>
+                  </td>
+                </tr>
+                {expandedRow === index && (
+                  <tr>
+                    <td colSpan="7" className="p-4">
+                      <div className="flex flex-col items-center">
+                        {/* Ticket con diseño */}
+                        <div ref={(el) => (ticketRefs.current[index] = el)} className="relative w-[900px] h-[300px]">
+                          {/* Imagen de fondo del ticket */}
+                          <img src={ticketImage} alt="Ticket" className="w-full h-full" />
+                          {/* Datos sobre el ticket */}
+                          <div className="absolute top-1.5 right-20 text-red-500 font-bold text-lg">{person.ticketNumber}</div>
+                          <div className="absolute bottom-52 right-25 text-black font-semibold">{person.firstName}</div>
+                          <div className="absolute bottom-38 right-20 text-black font-semibold">{person.lastName}</div>
+                          <div className="absolute bottom-24 right-25 text-black font-semibold">{person.dni}</div>
+                          <div className="absolute bottom-10 right-22 text-black font-semibold">{person.phone}</div>
+                        </div>
+                        {/* Botón para descargar el ticket */}
+                        <button
+                          onClick={() => generateImage(index)}
+                          className="mt-2 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded cursor-pointer"
+                        >
+                          Descargar Ticket
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </>
             ))}
           </tbody>
         </table>
-      </div>
-
-      {/* Formulario de edición */}
-      {editingPerson && (
-        <div className="w-full max-w-4xl p-4 border rounded bg-gray-100 mt-4">
-          <h2 className="text-xl font-bold mb-4">Editar Ticket #{editingPerson.ticketNumber}</h2>
-          <input
-            type="text"
-            name="firstName"
-            placeholder="Nombres"
-            value={editingPerson.firstName}
-            onChange={(e) =>
-              setEditingPerson({ ...editingPerson, firstName: e.target.value.toUpperCase() })
-            }
-            className="p-2 border rounded m-2 w-full"
-          />
-          <input
-            type="text"
-            name="lastName"
-            placeholder="Apellidos"
-            value={editingPerson.lastName}
-            onChange={(e) =>
-              setEditingPerson({ ...editingPerson, lastName: e.target.value.toUpperCase() })
-            }
-            className="p-2 border rounded m-2 w-full"
-          />
-          <input
-            type="text"
-            name="dni"
-            placeholder="DNI"
-            value={editingPerson.dni}
-            onChange={(e) =>
-              setEditingPerson({ ...editingPerson, dni: e.target.value.toUpperCase() })
-            }
-            className="p-2 border rounded m-2 w-full"
-          />
-          <input
-            type="text"
-            name="phone"
-            placeholder="Teléfono"
-            value={editingPerson.phone}
-            onChange={(e) =>
-              setEditingPerson({ ...editingPerson, phone: e.target.value.toUpperCase() })
-            }
-            className="p-2 border rounded m-2 w-full"
-          />
-          <button
-            onClick={updatePerson}
-            className="mt-2 p-2 bg-green-600 hover:bg-green-700 text-white rounded cursor-pointer w-full"
-          >
-            Actualizar
-          </button>
-          <button
-            onClick={() => setEditingPerson(null)}
-            className="mt-2 p-2 bg-red-600 hover:bg-red-700 text-white rounded cursor-pointer w-full"
-          >
-            Cancelar
-          </button>
-        </div>
-      )}
-
-      {/* Tickets generados */}
-      <div className="w-full flex flex-wrap justify-center mt-8">
-        {people.map((person, index) => (
-          <div key={person.id} className="m-4">
-            {/* Ticket con diseño */}
-            <div ref={(el) => (ticketRefs.current[index] = el)} className="relative w-[900px] h-[300px]">
-              {/* Imagen de fondo del ticket */}
-              <img src={ticketImage} alt="Ticket" className="w-full h-full" />
-
-              {/* Datos sobre el ticket */}
-              <div className="absolute top-2.5 right-20 text-red-600 font-bold text-lg">{person.ticketNumber}</div>
-              <div className="absolute bottom-53.5 right-25 text-black font-semibold">{person.firstName}</div>
-              <div className="absolute bottom-39.5 right-20 text-black font-semibold">{person.lastName}</div>
-              <div className="absolute bottom-25.5 right-25 text-black font-semibold">{person.dni}</div>
-              <div className="absolute bottom-11.5 right-22 text-black font-semibold">{person.phone}</div>
-            </div>
-
-            {/* Botón para descargar el ticket */}
-            <button onClick={() => generateImage(index)} className="mt-2 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded cursor-pointer">
-              Descargar Ticket
-            </button>
-          </div>
-        ))}
       </div>
     </div>
   );
