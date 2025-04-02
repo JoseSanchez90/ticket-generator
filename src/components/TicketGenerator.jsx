@@ -103,10 +103,10 @@ function TicketGenerator() {
     }
   };
 
-  // Actualizar datos de una persona
+  // Actualizar datos de una persona (incluyendo el número de ticket)
   const updatePerson = (index, field, value) => {
     const updatedPeople = [...people];
-    updatedPeople[index][field] = value.toUpperCase();
+    updatedPeople[index][field] = value; // Permitimos actualizar cualquier campo, incluyendo ticketNumber
     setPeople(updatedPeople);
     // Guardar en localStorage
     localStorage.setItem("people", JSON.stringify(updatedPeople));
@@ -223,7 +223,18 @@ function TicketGenerator() {
             {people.map((person, index) => (
               <>
                 <tr key={person.id} className="text-center">
-                  <td className="border border-gray-300 p-2">{person.ticketNumber}</td>
+                  <td className="border border-gray-300 p-2">
+                    {editingIndex === index ? (
+                      <input
+                        type="text"
+                        value={person.ticketNumber}
+                        onChange={(e) => updatePerson(index, "ticketNumber", e.target.value)}
+                        className="p-1 border rounded w-full"
+                      />
+                    ) : (
+                      person.ticketNumber
+                    )}
+                  </td>
                   <td className="border border-gray-300 p-2">
                     {editingIndex === index ? (
                       <input
