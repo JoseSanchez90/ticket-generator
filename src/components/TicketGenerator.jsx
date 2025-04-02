@@ -293,7 +293,7 @@ function TicketGenerator() {
               <img src={ticketImage} alt="Ticket" className="w-full h-full" />
 
               {/* Datos sobre el ticket */}
-              <div className="absolute top-1.5 right-20 text-red-500 font-bold text-lg">{person.ticketNumber}</div>
+              <div className="absolute top-1.5 right-20 text-red-600 font-bold text-lg">{person.ticketNumber}</div>
               <div className="absolute bottom-52 right-25 text-black font-semibold">{person.firstName}</div>
               <div className="absolute bottom-38 right-20 text-black font-semibold">{person.lastName}</div>
               <div className="absolute bottom-24 right-25 text-black font-semibold">{person.dni}</div>
