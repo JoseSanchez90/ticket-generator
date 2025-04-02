@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import html2canvas from "html2canvas";
-import * as XLSX from "xlsx"; // Importamos la biblioteca xlsx
+import * as XLSX from "xlsx";
+import ticketImage from './img/ticket.png'; // Importa la imagen del ticket
 
 function TicketGenerator() {
   const [people, setPeople] = useState([]);
@@ -12,27 +13,39 @@ function TicketGenerator() {
   });
   const [ticketNumber, setTicketNumber] = useState(1);
   const [editingPerson, setEditingPerson] = useState(null);
-
   const ticketRefs = useRef([]);
 
-  // Cargar el número del último ticket desde localStorage
   useEffect(() => {
     const savedNumber = localStorage.getItem("ticketNumber");
-    if (savedNumber) {
+    if (savedNumber && !isNaN(parseInt(savedNumber))) {
       setTicketNumber(parseInt(savedNumber));
     }
   }, []);
 
-  // Maneja cambios en los inputs
+  useEffect(() => {
+    return () => {
+      ticketRefs.current = []; // Limpiar referencias al desmontar
+    };
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value.toUpperCase() });
   };
 
-  // Agrega una persona a la lista
   const addPerson = () => {
     if (!formData.firstName || !formData.lastName || !formData.dni || !formData.phone) {
       alert("Por favor, llena todos los campos.");
+      return;
+    }
+
+    if (!/^\d{8}$/.test(formData.dni)) {
+      alert("El DNI debe tener 8 dígitos numéricos.");
+      return;
+    }
+
+    if (!/^\d+$/.test(formData.phone)) {
+      alert("El teléfono debe contener solo números.");
       return;
     }
 
@@ -40,15 +53,15 @@ function TicketGenerator() {
       ...formData,
       id: Date.now(),
       ticketNumber: ticketNumber.toString().padStart(3, "0"),
-      createdAt: new Date(), // Guarda la fecha y hora actual
+      createdAt: new Date(),
     };
+
     setPeople([...people, newPerson]);
     setTicketNumber(ticketNumber + 1);
     localStorage.setItem("ticketNumber", ticketNumber + 1);
     setFormData({ firstName: "", lastName: "", dni: "", phone: "" });
   };
 
-  // Formatea la fecha y hora para mostrarla
   const formatDateTime = (date) => {
     const options = {
       year: "numeric",
@@ -56,33 +69,32 @@ function TicketGenerator() {
       day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
-      hour12: true,
+      hour12: false,
     };
     return new Intl.DateTimeFormat("es-ES", options).format(date);
   };
 
-  // Exportar a Excel
   const exportToExcel = () => {
-    // Crear un array con los datos formateados
-    const dataForExcel = people.map((person) => ({
-      Ticket: person.ticketNumber,
-      Nombres: person.firstName,
-      Apellidos: person.lastName,
-      DNI: person.dni,
-      Teléfono: person.phone,
-      "Fecha y Hora": formatDateTime(person.createdAt),
-    }));
+    try {
+      const dataForExcel = people.map((person) => ({
+        Ticket: person.ticketNumber,
+        Nombres: person.firstName,
+        Apellidos: person.lastName,
+        DNI: person.dni,
+        Teléfono: person.phone,
+        "Fecha y Hora": formatDateTime(person.createdAt),
+      }));
 
-    // Crear un libro de Excel
-    const worksheet = XLSX.utils.json_to_sheet(dataForExcel);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Tickets");
-
-    // Descargar el archivo Excel
-    XLSX.writeFile(workbook, "tickets_generados.xlsx");
+      const worksheet = XLSX.utils.json_to_sheet(dataForExcel);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Tickets");
+      XLSX.writeFile(workbook, "tickets_generados.xlsx");
+    } catch (error) {
+      console.error("Error al exportar a Excel:", error);
+      alert("Ocurrió un error al exportar los datos a Excel.");
+    }
   };
 
-  // Actualiza los datos de una persona
   const updatePerson = () => {
     const updatedPeople = people.map((person) =>
       person.id === editingPerson.id ? editingPerson : person
@@ -91,14 +103,20 @@ function TicketGenerator() {
     setEditingPerson(null);
   };
 
-  // Genera la imagen del ticket
   const generateImage = async (index) => {
-    if (ticketRefs.current[index]) {
-      const canvas = await html2canvas(ticketRefs.current[index], { scale: 2 });
-      const link = document.createElement("a");
-      link.href = canvas.toDataURL("image/png");
-      link.download = `ticket-${people[index].ticketNumber}.png`;
-      link.click();
+    try {
+      if (ticketRefs.current[index]) {
+        const canvas = await html2canvas(ticketRefs.current[index], { scale: 2 });
+        const link = document.createElement("a");
+        link.href = canvas.toDataURL("image/png");
+        link.download = `ticket-${people[index].ticketNumber}.png`;
+        link.click();
+      } else {
+        console.error("Referencia al ticket no encontrada para el índice:", index);
+      }
+    } catch (error) {
+      console.error("Error al generar la imagen del ticket:", error);
+      alert("Ocurrió un error al generar el ticket.");
     }
   };
 
@@ -272,7 +290,7 @@ function TicketGenerator() {
             {/* Ticket con diseño */}
             <div ref={(el) => (ticketRefs.current[index] = el)} className="relative w-[900px] h-[300px]">
               {/* Imagen de fondo del ticket */}
-              <img src="/src/img/ticket.png" alt="Ticket" className="w-full h-full" />
+              <img src={ticketImage} alt="Ticket" className="w-full h-full" />
 
               {/* Datos sobre el ticket */}
               <div className="absolute top-1.5 right-20 text-red-500 font-bold text-lg">{person.ticketNumber}</div>
