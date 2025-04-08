@@ -11,7 +11,7 @@ function TicketGenerator() {
     address: "", // Reemplazamos DNI por Dirección
     phone: "",
   });
-  const [ticketNumber, setTicketNumber] = useState(47);
+  const [ticketNumber, setTicketNumber] = useState(54);
   const [editingIndex, setEditingIndex] = useState(null); // Índice de la fila en edición
   const [expandedRow, setExpandedRow] = useState(null); // Índice de la fila expandida
   const ticketRefs = useRef([]);
@@ -319,7 +319,8 @@ function TicketGenerator() {
                     <td colSpan="7" className="p-4">
                       <div className="flex flex-col items-center">
                         {/* Ticket con diseño */}
-                        <div ref={(el) => (ticketRefs.current[index] = el)} className="relative w-[900px] h-[300px]">
+                        {/* <div ref={(el) => (ticketRefs.current[index] = el)} className="relative w-[900px] h-[300px]"> */}
+                        <div ref={(el) => {if (el) {ticketRefs.current[index] = el} else {delete ticketRefs.current[index]}}} className="relative w-[900px] h-[300px]">
                           {/* Imagen de fondo del ticket */}
                           <img src={ticketImage} alt="Ticket" className="w-full h-full" />
                           {/* Datos sobre el ticket */}
