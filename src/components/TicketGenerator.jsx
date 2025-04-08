@@ -221,7 +221,7 @@ function TicketGenerator() {
           </thead>
           <tbody>
             {people.map((person, index) => (
-              <div>
+              <>
                 <tr key={person.id} className="text-center">
                   <td className="border border-gray-300 p-2">
                     {editingIndex === index ? (
@@ -340,7 +340,7 @@ function TicketGenerator() {
                     </td>
                   </tr>
                 )}
-              </div>
+              </>
             ))}
           </tbody>
         </table>
