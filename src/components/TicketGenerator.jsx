@@ -302,7 +302,7 @@ function TicketGenerator() {
                   <tr>
                     <td colSpan="7" className="p-4">
                       <div className="flex flex-col items-center">
-                        <div ref={(el) => { ticketRefs.current[index] = el; }} className="relative w-[900px] h-[300px]">
+                        <div ref={(el) => (ticketRefs.current[index] = el)} className="relative w-[900px] h-[300px]">
                           <img src={ticketImage} alt="Ticket" className="w-full h-full" />
                           <div className="absolute top-1.5 right-20 text-red-500 font-bold text-lg">{person.ticketNumber}</div>
                           <div className="absolute bottom-54.5 right-25 text-black font-semibold text-sm">{person.firstName}</div>
