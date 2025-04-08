@@ -207,7 +207,7 @@ function TicketGenerator() {
           </thead>
           <tbody>
             {people.map((person, index) => (
-              <tr key={person.id} className="text-center">
+              <tr key={person.id} className="text-center relative"> {/* Añadir relative aquí */}
                 <td className="border border-gray-300 p-2">
                   {editingIndex === index ? (
                     <input
@@ -297,29 +297,27 @@ function TicketGenerator() {
                   >
                     Eliminar
                   </button>
-                </td>
-                {expandedRow === index && (
-                  <tr>
-                    <td colSpan="7" className="p-4">
-                      <div className="flex flex-col items-center">
-                        <div ref={(el) => (ticketRefs.current[index] = el)} className="relative w-[900px] h-[300px]">
-                          <img src={ticketImage} alt="Ticket" className="w-full h-full" />
-                          <div className="absolute top-1.5 right-20 text-red-500 font-bold text-lg">{person.ticketNumber}</div>
-                          <div className="absolute bottom-54.5 right-25 text-black font-semibold text-sm">{person.firstName}</div>
-                          <div className="absolute bottom-40 right-20 text-black font-semibold text-sm">{person.lastName}</div>
-                          <div className="absolute bottom-26 right-4 text-black font-semibold text-sm">{person.address}</div>
-                          <div className="absolute bottom-11.5 right-22 text-black font-semibold text-sm">{person.phone}</div>
-                        </div>
-                        <button
-                          onClick={() => generateImage(index)}
-                          className="mt-2 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded cursor-pointer"
-                        >
-                          Descargar Ticket
-                        </button>
+                  
+                  {/* Aquí se muestra el ticket debajo de la fila */}
+                  {expandedRow === index && (
+                    <div className="absolute left-0 w-full mt-2"> {/* Cambiar a div y usar absolute */}
+                      <div ref={(el) => (ticketRefs.current[index] = el)} className="relative w-full h-[300px]">
+                        <img src={ticketImage} alt="Ticket" className="w-full h-full" />
+                        <div className="absolute top-1.5 right-20 text-red-500 font-bold text-lg">{person.ticketNumber}</div>
+                        <div className="absolute bottom-54.5 right-25 text-black font-semibold text-sm">{person.firstName}</div>
+                        <div className="absolute bottom-40 right-20 text-black font-semibold text-sm">{person.lastName}</div>
+                        <div className="absolute bottom-26 right-4 text-black font-semibold text-sm">{person.address}</div>
+                        <div className="absolute bottom-11.5 right-22 text-black font-semibold text-sm">{person.phone}</div>
                       </div>
-                    </td>
-                  </tr>
-                )}
+                      <button
+                        onClick={() => generateImage(index)}
+                        className="mt-2 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded cursor-pointer"
+                      >
+                        Descargar Ticket
+                      </button>
+                    </div>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
