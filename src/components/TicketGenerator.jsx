@@ -207,120 +207,120 @@ function TicketGenerator() {
           </thead>
           <tbody>
             {people.map((person, index) => (
-              <React.Fragment key={person.id}>
-                <tr className="text-center">
-                  <td className="border border-gray-300 p-2">
-                    {editingIndex === index ? (
-                      <input
-                        type="text"
-                        value={person.ticketNumber}
-                        onChange={(e) => updatePerson(index, "ticketNumber", e.target.value)}
-                        className="p-1 border rounded w-full"
-                      />
-                    ) : (
-                      person.ticketNumber
-                    )}
-                  </td>
-                  <td className="border border-gray-300 p-2">
-                    {editingIndex === index ? (
-                      <input
-                        type="text"
-                        value={person.firstName}
-                        onChange={(e) => updatePerson(index, "firstName", e.target.value)}
-                        className="p-1 border rounded w-full"
-                      />
-                    ) : (
-                      person.firstName
-                    )}
-                  </td>
-                  <td className="border border-gray-300 p-2">
-                    {editingIndex === index ? (
-                      <input
-                        type="text"
-                        value={person.lastName}
-                        onChange={(e) => updatePerson(index, "lastName", e.target.value)}
-                        className="p-1 border rounded w-full"
-                      />
-                    ) : (
-                      person.lastName
-                    )}
-                  </td>
-                  <td className="border border-gray-300 p-2">
-                    {editingIndex === index ? (
-                      <input
-                        type="text"
-                        value={person.address}
-                        onChange={(e) => updatePerson(index, "address", e.target.value)}
-                        className="p-1 border rounded w-full"
-                      />
-                    ) : (
-                      person.address
-                    )}
-                  </td>
-                  <td className="border border-gray-300 p-2">
-                    {editingIndex === index ? (
-                      <input
-                        type="text"
-                        value={person.phone}
-                        onChange={(e) => updatePerson(index, "phone", e.target.value)}
-                        className="p-1 border rounded w-full"
-                      />
-                    ) : (
-                      person.phone
-                    )}
-                  </td>
-                  <td className="border border-gray-300 p-2">{formatDateTime(person.createdAt)}</td>
-                  <td className="border border-gray-300 p-2">
-                    {editingIndex === index ? (
-                      <button
-                        onClick={() => setEditingIndex(null)}
-                        className="p-2 bg-green-600 hover:bg-green-700 text-white rounded cursor-pointer"
-                      >
-                        Guardar
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => setEditingIndex(index)}
-                        className="p-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded cursor-pointer"
-                      >
-                        Editar
-                      </button>
-                    )}
+              <tr key={person.id} className="text-center">
+                <td className="border border-gray-300 p-2">
+                  {editingIndex === index ? (
+                    <input
+                      type="text"
+                      value={person.ticketNumber}
+                      onChange={(e) => updatePerson(index, "ticketNumber", e.target.value)}
+                      className="p-1 border rounded w-full"
+                    />
+                  ) : (
+                    person.ticketNumber
+                  )}
+                </td>
+                <td className="border border-gray-300 p-2">
+                  {editingIndex === index ? (
+                    <input
+                      type="text"
+                      value={person.firstName}
+                      onChange={(e) => updatePerson(index, "firstName", e.target.value)}
+                      className="p-1 border rounded w-full"
+                    />
+                  ) : (
+                    person.firstName
+                  )}
+                </td>
+                <td className="border border-gray-300 p-2">
+                  {editingIndex === index ? (
+                    <input
+                      type="text"
+                      value={person.lastName}
+                      onChange={(e) => updatePerson(index, "lastName", e.target.value)}
+                      className="p-1 border rounded w-full"
+                    />
+                  ) : (
+                    person.lastName
+                  )}
+                </td>
+                <td className="border border-gray-300 p-2">
+                  {editingIndex === index ? (
+                    <input
+                      type="text"
+                      value={person.address}
+                      onChange={(e) => updatePerson(index, "address", e.target.value)}
+                      className="p-1 border rounded w-full"
+                    />
+                  ) : (
+                    person.address
+                  )}
+                </td>
+                <td className="border border-gray-300 p-2">
+                  {editingIndex === index ? (
+                    <input
+                      type="text"
+                      value={person.phone}
+                      onChange={(e) => updatePerson(index, "phone", e.target.value)}
+                      className="p-1 border rounded w-full"
+                    />
+                  ) : (
+                    person.phone
+                  )}
+                </td>
+                <td className="border border-gray-300 p-2">{formatDateTime(person.createdAt)}</td>
+                <td className="border border-gray-300 p-2">
+                  {editingIndex === index ? (
                     <button
-                      onClick={() => setExpandedRow(expandedRow === index ? null : index)}
-                      className="ml-2 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded cursor-pointer"
+                      onClick={() => setEditingIndex(null)}
+                      className="p-2 bg-green-600 hover:bg-green-700 text-white rounded cursor-pointer"
                     >
-                      {expandedRow === index ? "Ocultar Ticket" : "Mostrar Ticket"}
+                      Guardar
                     </button>
+                  ) : (
                     <button
-                      onClick={() => deletePerson(index)}
-                      className="ml-2 p-2 bg-red-600 hover:bg-red-700 text-white rounded cursor-pointer"
+                      onClick={() => setEditingIndex(index)}
+                      className="p-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded cursor-pointer"
                     >
-                      Eliminar
+                      Editar
                     </button>
-                  </td>
-                </tr>
-                {expandedRow === index && ( // Aquí se agrega la fila del ticket
+                  )}
+                  <button
+                    onClick={() => setExpandedRow(expandedRow === index ? null : index)}
+                    className="ml-2 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded cursor-pointer"
+                  >
+                    {expandedRow === index ? "Ocultar Ticket" : "Mostrar Ticket"}
+                  </button>
+                  <button
+                    onClick={() => deletePerson(index)}
+                    className="ml-2 p-2 bg-red-600 hover:bg-red-700 text-white rounded cursor-pointer"
+                  >
+                    Eliminar
+                  </button>
+                </td>
+                {expandedRow === index && (
                   <tr>
                     <td colSpan="7" className="p-4">
-                      <div className="relative w-full h-[300px]">
-                        <img src={ticketImage} alt="Ticket" className="w-full h-full" />
-                        <div className="absolute top-1.5 right-20 text-red-500 font-bold text-lg">{person.ticketNumber}</div>
-                        <div className="absolute bottom-54.5 right-25 text-black font-semibold text-sm">{person.firstName}</div>
-                        <div className="absolute bottom-40 right-20 text-black font-semibold text-sm">{person.lastName}</div>
-                        <div className="absolute bottom-26 right-4 text-black font-semibold text-sm">{person.address}</div>
-                        <div className="absolute bottom-11.5 right-22 text-black font-semibold text-sm">{person.phone}</div>
+                      <div className="flex flex-col items-center">
+                        <div ref={(el) => (ticketRefs.current[index] = el)} className="relative w-[900px] h-[300px]">
+                          <img src={ticketImage} alt="Ticket" className="w-full h-full" />
+                          <div className="absolute top-1.5 right-20 text-red-500 font-bold text-lg">{person.ticketNumber}</div>
+                          <div className="absolute bottom-54.5 right-25 text-black font-semibold text-sm">{person.firstName}</div>
+                          <div className="absolute bottom-40 right-20 text-black font-semibold text-sm">{person.lastName}</div>
+                          <div className="absolute bottom-26 right-4 text-black font-semibold text-sm">{person.address}</div>
+                          <div className="absolute bottom-11.5 right-22 text-black font-semibold text-sm">{person.phone}</div>
+                        </div>
+                        <button
+                          onClick={() => generateImage(index)}
+                          className="mt-2 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded cursor-pointer"
+                        >
+                          Descargar Ticket
+                        </button>
                       </div>
-                      <button
-                        onClick={() => generateImage(index)}
-                        className="mt-2 p-2 bg-blue-600 hover:bg-blue-700 text-white rounded cursor-pointer"
-                      >
-                        Descargar Ticket
-                      </button>
                     </td>
                   </tr>
                 )}
-              </React.Fragment>
+              </tr>
             ))}
           </tbody>
         </table>
